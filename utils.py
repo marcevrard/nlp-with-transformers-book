@@ -10,10 +10,20 @@ import torch
 import transformers
 from IPython.display import set_matplotlib_formats
 
+
 # TODO: Consider adding SageMaker StudioLab
-is_colab = "google.colab" in sys.modules
-is_kaggle = "kaggle_secrets" in sys.modules
-is_gpu_available = torch.cuda.is_available()
+
+
+def is_colab():
+    return "google.colab" in sys.modules
+
+
+def is_kaggle():
+    return "kaggle_secrets" in sys.modules
+
+
+def is_gpu_available():
+    return torch.cuda.is_available()
 
 
 def install_mpl_fonts():
@@ -35,11 +45,17 @@ def display_library_version(library):
 
 def setup_chapter():
     # Check if we have a GPU
-    if not is_gpu_available:
-        print("No GPU was detected! This notebook can be *very* slow without a GPU 🐢")
-        if is_colab:
-            print("Go to Runtime > Change runtime type and select a GPU hardware accelerator.")
-        if is_kaggle:
+    if not is_gpu_available():
+        print(
+            "No GPU was detected! "
+            "This notebook can be *very* slow without a GPU 🐢"
+        )
+        if is_colab():
+            print(
+                "Go to Runtime "
+                "> Change runtime type and select a GPU hardware accelerator."
+            )
+        if is_kaggle():
             print("Go to Settings > Accelerator and select GPU.")
     # Give visibility on versions of the core libraries
     display_library_version(transformers)
@@ -55,7 +71,9 @@ def setup_chapter():
 
 
 def wrap_print_text(print):
-    """Adapted from: https://stackoverflow.com/questions/27621655/how-to-overload-print-function-to-expand-its-functionality/27621927"""
+    """Adapted from:
+    https://stackoverflow.com/questions/27621655/
+    how-to-overload-print-function-to-expand-its-functionality/27621927"""
 
     def wrapped_func(text):
         if not isinstance(text, str):
@@ -66,9 +84,14 @@ def wrap_print_text(print):
             break_on_hyphens=False,
             replace_whitespace=False,
         )
-        return print("\n".join(wrapper.fill(line) for line in text.split("\n")))
+        return print(
+            "\n".join(wrapper.fill(line) for line in text.split("\n"))
+        )
 
     return wrapped_func
 
 
-print = wrap_print_text(print)
+if __name__ == "__main__":
+    # setup_chapter()
+    # print("All libraries were imported successfully!")
+    print = wrap_print_text(print)
